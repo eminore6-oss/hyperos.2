@@ -1,34 +1,36 @@
 
-name: Compilar APK HyperOS Redmi A5
+name: Generar APK Android
 
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main, master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Descargar el proyecto
+      - name: Descargar código
         uses: actions/checkout@v4
 
       - name: Preparar Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: '17'
 
-      - name: Dar permisos a Gradle
-        run: chmod +x gradlew
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
 
       - name: Compilar APK
-        run: ./gradlew assembleDebug
+        run: gradle assembleDebug
 
       - name: Guardar APK
         uses: actions/upload-artifact@v4
         with:
-          name: HyperOS-Redmi-A5-APK
-          path: app/build/outputs/apk/debug/*.apk
+          name: HyperOS-Redmi-A5-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
